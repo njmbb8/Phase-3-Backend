@@ -8,7 +8,7 @@ class ApplicationController < Sinatra::Base
     Item.all.to_json
   end
 
-  post '/items/' do
+  post '/items' do
     item = Item.create(
       name: params[:name],
       image: params[:image],
@@ -16,5 +16,22 @@ class ApplicationController < Sinatra::Base
     )
 
     item.to_json
+  end
+
+  post '/upload' do
+    if params[:image] && params[:image][:filename]
+      filename = params[:image][:filename]
+      file = params[:image][:tempfile]
+      path = File.join(settings.public_folder, params[:image][:filename])
+
+      File.open(path, 'wb') do |f|
+        f.write(file.read)
+      end
+      200
+    end
+  end
+
+  get '/images/:image' do
+    send_file File.join(settings.public_folder, params[:image])
   end
 end
