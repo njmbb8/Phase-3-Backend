@@ -34,4 +34,11 @@ class ApplicationController < Sinatra::Base
   get '/images/:image' do
     send_file File.join(settings.public_folder, params[:image])
   end
+
+  delete '/items/:id' do
+    item = Item.find(params[:id])
+    item.destroy
+    File.delete(File.join(settings.public_folder, item[:image]))
+    200
+  end
 end
