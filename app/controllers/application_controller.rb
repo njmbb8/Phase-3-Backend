@@ -8,6 +8,10 @@ class ApplicationController < Sinatra::Base
     Item.all.to_json
   end
 
+  get "/items/:id" do
+    Item.find(params[:id]).to_json
+  end
+
   post '/items' do
     item = Item.create(
       name: params[:name],
@@ -40,5 +44,15 @@ class ApplicationController < Sinatra::Base
     item.destroy
     File.delete(File.join(settings.public_folder, item[:image]))
     200
+  end
+
+  patch '/items/:id' do
+    item = Item.find(params[:id])
+    item.update(
+      name: params[:name],
+      price: params[:price],
+      image: params[:image]
+    )
+    item.to_json
   end
 end
