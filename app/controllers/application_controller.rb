@@ -78,4 +78,13 @@ class ApplicationController < Sinatra::Base
     User.find(params[:id]).destroy
     200
   end
+
+  post '/users' do
+    user = User.create(
+      first_name: params[:first_name],
+      last_name: params[:last_name],
+      address: params[:address]
+    )
+    user.to_json
+  end
 end
