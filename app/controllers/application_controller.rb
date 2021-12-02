@@ -59,4 +59,18 @@ class ApplicationController < Sinatra::Base
   get '/users' do
     User.all.to_json
   end
+
+  get '/users/:id/orders' do
+    User.find(params[:id]).orders.to_json
+  end
+
+  patch '/users/:id' do
+    user = User.find(params[:id])
+    user.update(
+      first_name: params[:first_name],
+      last_name: params[:last_name],
+      address: params[:address]
+    )
+    user.to_json
+  end
 end
