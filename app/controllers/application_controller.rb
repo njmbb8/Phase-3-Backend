@@ -55,4 +55,8 @@ class ApplicationController < Sinatra::Base
     )
     item.to_json
   end
+
+  get '/users' do
+    User.all.to_json
+  end
 end
