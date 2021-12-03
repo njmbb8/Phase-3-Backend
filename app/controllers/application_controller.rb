@@ -57,11 +57,7 @@ class ApplicationController < Sinatra::Base
   end
 
   get '/users' do
-    User.all.to_json
-  end
-
-  get '/users/:id/orders' do
-    User.find(params[:id]).orders.to_json
+    User.all.to_json(:include => :orders)
   end
 
   patch '/users/:id' do
@@ -71,7 +67,7 @@ class ApplicationController < Sinatra::Base
       last_name: params[:last_name],
       address: params[:address]
     )
-    user.to_json
+    user.to_json(:include => :orders)
   end
 
   delete '/users/:id' do
@@ -85,6 +81,56 @@ class ApplicationController < Sinatra::Base
       last_name: params[:last_name],
       address: params[:address]
     )
-    user.to_json
+    user.to_json(:include => :orders)
+  end
+
+  get '/orders' do
+    Order.all.to_json(:include => [:user, :order_contents])
+  end
+
+  patch '/orders/:id' do
+    order = Order.find(params[:id])
+    order.update(
+      user_id: params[:user_id],
+      fulfilled: params[:fulfilled]
+    )
+    order.to_json(:include => [:user, :order_contents])
+  end
+
+  delete '/orders/:id' do
+    Order.find(params[:id]).destroy
+    200
+  end
+
+  post '/orders' do
+    order = Order.create(
+      user_id: params[:user_id],
+      fulfilled: false
+    )
+    order.to_json(:include => [:user, :order_contents])
+  end
+
+  post '/addcontents' do
+    contents = OrderContent.create(
+      order_id: params[:order_id],
+      item_id: params[:item_id],
+      quantity: params[:quantity]
+    )
+    contents.to_json
+  end
+
+  delete '/contents/:id' do
+    OrderContent.find(params[:id]).destroy
+    200
+  end
+
+  patch '/contents/:id' do
+    content = OrderContent.find(params[:id])
+    content.update(
+      order_id: params[:order_id],
+      item_id: params[:item_id],
+      quantity: params[:quantity]
+    )
+    content.to_json
   end
 end
